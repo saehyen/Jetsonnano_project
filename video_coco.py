@@ -13,7 +13,6 @@ def proc(module, video):
         # keypointsMapping = ['Nose', 'Neck', 'R-Sho', 'R-Elb', 'R-Wr', 'L-Sho',
         #                     'L-Elb', 'L-Wr', 'R-Hip', 'R-Knee', 'R-Ank', 'L-Hip',
         #                     'L-Knee', 'L-Ank', 'R-Eye', 'L-Eye', 'R-Ear', 'L-Ear']
-        # test
     # 동영상 데이터 로드, cv 규격에 맞는 데이터 크기로 변환
     inWidth = 368
     inHeight = 368
