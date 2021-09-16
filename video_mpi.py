@@ -3,8 +3,6 @@ import time
 import numpy as np
 import os
 
-#enum 이나 #define
-
 def proc(module, video):
     # 사용할 모델 지정
     if module == "coco":
@@ -14,10 +12,26 @@ def proc(module, video):
         POSE_PAIRS = [ [1,0],[1,2],[1,5],[2,3],[3,4],[5,6],[6,7],[1,8],[8,9],
                       [9,10],[1,11],[11,12],[12,13],[0,14],[0,15],[14,16],[15,17]]
 
-# keypointsMapping = ['Nose', 'Neck', 'R-Sho', 'R-Elb', 'R-Wr', 'L-Sho',
-        #                     'L-Elb', 'L-Wr', 'R-Hip', 'R-Knee', 'R-Ank', 'L-Hip',
-        #                     'L-Knee', 'L-Ank', 'R-Eye', 'L-Eye', 'R-Ear', 'L-Ear']
-
+        # <COCO module>
+        #  0 - Nose
+        #  1 - Neck
+        #  2 - Right Shoulder
+        #  3 - Right Elbow
+        #  4 - Right Wrist
+        #  5 - Left Shoulder
+        #  6 - Left Elbow
+        #  7 - Left Wrist
+        #  8 - Right Hip
+        #  9 - Right Knee
+        # 10 - Right Ankle
+        # 11 - Left Hip
+        # 12 - Left Knee
+        # 13 - Left Ankle
+        # 14 - Right Eye
+        # 15 - Left Eye
+        # 16 - Right Ear
+        # 17 - Left Ear
+        
     elif module == "mpi":
         # 훈련된 network 셋팅
         protoFile = "./model/mpi.prototxt"
@@ -41,9 +55,6 @@ def proc(module, video):
         # 12 - Left Knee
         # 13 - Left Ankle
         # 14 - Chest
-
-    #frame 별 좌표 list 출력
-    y_pos = []
     
     # 동영상 데이터 로드, cv 규격에 맞는 데이터 크기로 변환
     inWidth = 368
@@ -56,7 +67,7 @@ def proc(module, video):
     height = 0
     
     #현재 상태를 저장
-    Current_state_toggle = "Default"
+    Current_state_toggle = "Stand"
     #앉아있는 frame수 count
     sit_count = 0
     #서있는 frame수 count
@@ -76,7 +87,6 @@ def proc(module, video):
     net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
     while cv2.waitKey(1) < 0:
         
-        t = time.time()
         hasFrame, frame = cap.read()
         frameCopy = np.copy(frame)
         if not hasFrame:
@@ -110,10 +120,6 @@ def proc(module, video):
             else :
                 points.append(None)
         
-        #좌표 list 출력
-        #y_pos.append(points[1][1])
-        
-        
         # toggle 조건 판별====================================================================
         # 서 있는 상태면 count 후 15 이상이면 toggle
         
@@ -121,21 +127,22 @@ def proc(module, video):
             
         if(Is_stand(height, points) and Current_state_toggle == "Sit"):
             stand_count += 1
-            if(stand_count > 15):
+            if(stand_count > 10):
                 Current_state_toggle = "Stand"
                 stand_count = 0
                 #routine 리스트에 상태 저장
                 routine_list.append("Stand")
                 #현재까지 routine 리스트 출력
                 print(routine_list)
+                
         elif(Is_sit(height, points) and Current_state_toggle == "Stand"):
             sit_count += 1
-            if(sit_count >15):
+            if(sit_count >10):
                 Current_state_toggle = "Sit"
                 sit_count = 0
                 routine_list.append("Sit")
                 print(routine_list)
-        
+        # toggle 조건 판별====================================================================
         
         
         # 점끼리 연결(그림 그리기)
@@ -153,27 +160,24 @@ def proc(module, video):
                 #화면에 점 표시
                 cv2.circle(frame, points[partA], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
                 cv2.circle(frame, points[partB], 8, (0, 0, 255), thickness=-1, lineType=cv2.FILLED)
-        cv2.putText(frame, "Test Time = {:.2f} sec".format(time.time() - t), (50, 50),
-                    cv2.FONT_HERSHEY_COMPLEX, .8, (255, 50, 0), 2, lineType=cv2.LINE_AA)
-        # 추가 : 현재 상태 체크 =================================================
-        cv2.putText(frame, "Squat State = {} ".format(Current_state_toggle), (50, 100),
-                   cv2.FONT_HERSHEY_COMPLEX, .8, (255, 50, 0), 2, lineType=cv2.LINE_AA)
-        # 추가 : 현재 상태 체크 =================================================
         
+        # 추가 : 현재 상태 체크 =================================================
+        #현재 상태
+        cv2.putText(frame, "Squat State = {} ".format(Current_state_toggle), (50, 50),
+                   cv2.FONT_HERSHEY_COMPLEX, .8, (0, 255, 0), 2, lineType=cv2.LINE_AA)
+        #Is_sit
+        cv2.putText(frame, "Is_sit = {} ".format("true" if(Is_sit(height, points)) else "false"), (50, 100),
+                   cv2.FONT_HERSHEY_COMPLEX, .8, (0, 255, 0), 2, lineType=cv2.LINE_AA)
+        #Is_stand
+        cv2.putText(frame, "Is_stand = {} ".format("true" if(Is_stand(height, points)) else "false"), (50, 150),
+                   cv2.FONT_HERSHEY_COMPLEX, .8, (0, 255, 0), 2, lineType=cv2.LINE_AA)
+        #squat routine
+        cv2.putText(frame, "{} ".format(int(len(routine_list)/2)), (50, 200),
+                   cv2.FONT_HERSHEY_COMPLEX, .8, (0, 255, 0), 2, lineType=cv2.LINE_AA)
+        # 추가 : 현재 상태 체크 =================================================
         
         vid_writer.write(frame)
-        
-    #print(y_pos)
-    
     vid_writer.release()
-
-
-
-
-
-
-
-
 
 # 두 점사이 거리를 계산하는 함수
 def cal_distance(points_1, points_2):
@@ -194,8 +198,8 @@ def cal_distance(points_1, points_2):
 
 #스쿼트 자세인지 확인
 def Is_sit(height, points): #T: 앉은 자세, F: 서있을 때/어정쩡할때
-    if (Angle(points)<90 and Angle(points)>70):
-        if cal_distance(points[0], points[13])<height*0.6:
+    if (Angle(points)<105 and Angle(points)>65):
+        if cal_distance(points[0], points[13])<height*0.75:
             return True
     else:
         return False
@@ -203,8 +207,8 @@ def Is_sit(height, points): #T: 앉은 자세, F: 서있을 때/어정쩡할때
         
 #일어선 자세인지 확인    
 def Is_stand(height, points):
-    if (Angle(points)>180 and Angle(points)<150):
-        if cal_distance(points[0], points[13])>height*0.9:
+    if (Angle(points)>155 and Angle(points)<200):
+        if cal_distance(points[0], points[13])>height*0.75:
             return True
     else:
         return False
@@ -274,15 +278,17 @@ def Angle(points):
         #print(theta2)
         
         if left != False and right != False :
-            return (theta1+theta2)/2
+            return int((theta1+theta2)/2)
         elif left != False and right == False :
-            return theta1
+            return int(theta1)
         else :
-            return theta2
+            return int(theta2)
 
 if __name__ == '__main__':
     module = ["coco"]
+    start_time = time.time()
     for i in module:
         for j in os.listdir("./input"):
             if j[-3:] in ['mp4','avi']:
                 proc(i, j)
+    print("{} ".format(time.time() - start_time))
