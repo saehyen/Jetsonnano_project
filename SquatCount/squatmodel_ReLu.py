@@ -12,24 +12,18 @@ tf.keras.backend.set_floatx('float64')
 epochs = 10
 drop = 0.5
 img_size = (128,128)
-#LeakyReLU
+
+#ReLU
 model = Sequential([
-    # 필터 8개,
-    Conv2D(8, 5, activation=tf.keras.layers.LeakyReLU(alpha=0.1), input_shape = (img_size[0], img_size[1], 1)),
-    # 3x3 중 최대값 한개 저장
+    Conv2D(8, 5, activation = 'relu', input_shape = (img_size[0], img_size[1], 1)),
     MaxPool2D(3),
-    # 필터 16개,
-    Conv2D(16, 4, activation=tf.keras.layers.LeakyReLU(alpha=0.1)),
+    Conv2D(16, 4, activation = 'relu'),
     MaxPool2D(2),
-    # 2x2 중 최대값 한개 저장
-    Conv2D(32, 3, activation=tf.keras.layers.LeakyReLU(alpha=0.1)),
-    # 1차원 데이터로 펼치기
+    Conv2D(32, 3, activation = 'relu'),
     Flatten(),
-    # 
-    Dense(32, activation=tf.keras.layers.LeakyReLU(alpha=0.1)),
+    Dense(32, activation = 'relu'),
     Dropout(drop),
-    Dense(8, activation=tf.keras.layers.LeakyReLU(alpha=0.1)),
-    # 클래스 개수 : 3 , 제일 큰값 1, 작은값 0
+    Dense(8, activation = 'relu'),
     Dense(3, activation = 'softmax')
 ])
 
