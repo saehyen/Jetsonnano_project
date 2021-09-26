@@ -85,13 +85,13 @@ while cap.isOpened():
         if pred[0][c] >= 0.5:
             
             if c == 0:
-                category = "Lower"
+                category = "Sit2"
                 state = 0
             elif c == 1:
-                category = "Middle"
+                category = "Sit"
                 state = 1
             elif c == 2:
-                category = "Upper"
+                category = "Stand"
                 state = 2
             
         if currentState[0] == state:
