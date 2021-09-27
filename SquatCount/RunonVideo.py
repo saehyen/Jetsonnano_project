@@ -5,8 +5,7 @@ import time
 
 from tensorflow.keras.models import load_model
 
-# 비디오, 모델 경로 설정
-# videoPath = 'C:/Users/HUSTAR12/Desktop/Squat/Input/6.mp4'
+# 모델 경로 설정
 modelPath = 'C:/Users/HUSTAR12/Desktop/Squat/saved/saved11.h5'
 
 
@@ -66,9 +65,13 @@ if not cap.isOpened():
 start_time = time.time()
 timeset=True
 timeset2=True
+Framenum = 0
+category_ = 'None'
+state_ = -1
 # 프레임이 존재할때
-while cap.isOpened():
+while cap.isOpened(): 
     ret, frame = cap.read()
+    Framenum+=1
     if ret:
  #       if rotateCode is not None:
  #          frame = cv2.rotate(frame, rotateCode)
@@ -81,11 +84,9 @@ while cap.isOpened():
         category = 'None'
         state = -1
         # 정확도가 50퍼센트 이상일때
-                
-        if pred[0][c] >= 0.5:
-            
-            if c == 0:
-                category = "Sit2"
+        if pred[0][c] >= 0.5 and Framenum % 5  == 0 :
+            if c == 0 :
+                category = "Sit_"
                 state = 0
             elif c == 1:
                 category = "Sit"
@@ -93,7 +94,9 @@ while cap.isOpened():
             elif c == 2:
                 category = "Stand"
                 state = 2
-            
+        else :
+            category = category_
+            state = state_
         if currentState[0] == state:
             currentState[1] += 1
         else:
@@ -109,7 +112,8 @@ while cap.isOpened():
         # 젯슨나노 2560x1440 ,1920*1080
         frame = cv2.resize(frame, (2560,1400))  
         
-        
+        category_ = category
+        state_ = state
         # 스쿼트 개수, 상태 표시
         if time.time()-start_time >= 4 :
             cv2.putText(frame,
@@ -134,6 +138,7 @@ while cap.isOpened():
                         fontScale,
                         fontColor,
                         lineType)
+
             
         if time.time()-start_time <= 4 :
              cv2.putText(frame,
@@ -165,7 +170,7 @@ while cap.isOpened():
         
         # 비디오 저장
         #out.write(frame)
-
+        # 실시간 종료 : q
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
     else:
