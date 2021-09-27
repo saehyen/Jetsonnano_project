@@ -19,7 +19,7 @@
     - 사용한 프레임워크 : Keras
     - batch_size : 16
     - epochs : 10
-    - 활성화함수 : layers.LeakyReLU(alpha = 0.1 )
+    - 활성화함수 : layers.LeakyReLU(alpha = 0.1)
     - 손실함수 : categorical_crossentropy
     - 옵티마이저 : adam
     
