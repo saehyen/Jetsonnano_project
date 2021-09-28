@@ -68,17 +68,24 @@ timeset2=True
 Framenum = 0
 category_ = 'None'
 state_ = -1
+####
+x = 40
+y = 0
+w = 40
+h = 128
 # 프레임이 존재할때
 while cap.isOpened(): 
     ret, frame = cap.read()
+    frame2 = frame[y:y+h, x:x+w]
+    cv2.rectangle(frame,(450,480),(150,0),(0,255,0),5)
+    
     Framenum+=1
     if ret:
  #       if rotateCode is not None:
  #          frame = cv2.rotate(frame, rotateCode)
-         
-        pred = model(frameForModel(frame)).numpy()
+        pred = model(frameForModel(frame[150:450,0:480])).numpy()
+        #pred = model(frameForModel(frame)).numpy()
        #5초간 멈췄다 시작하기
-        
         c = np.argmax(pred)
         # 초기세팅
         category = 'None'
@@ -110,8 +117,7 @@ while cap.isOpened():
                 canIncreaseCount = False
         # 화면크기 실험중  
         # 젯슨나노 2560x1440 ,1920*1080
-        frame = cv2.resize(frame, (2560,1400))  
-        
+        frame = cv2.resize(frame, (2560,1440))  
         category_ = category
         state_ = state
         # 스쿼트 개수, 상태 표시
