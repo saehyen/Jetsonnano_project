@@ -20,7 +20,7 @@
     - 테스트에 사용 : 2996 (25%)
     - 이미지 크기 : 128 * 128
     - GrayScale
-    
+    - ROI 추가
 ## 모델 학습 ( 모델 )
     - 사용한 프레임워크 : Keras
     - batch_size : 16
@@ -28,7 +28,7 @@
     - 활성화함수 : layers.LeakyReLU(alpha = 0.1)
     - 손실함수 : categorical_crossentropy
     - 옵티마이저 : adam
-    
+
 ## 모델 학습 ( 결과 ) 
 
     - 1차 : 테스트 데이터 : 10551(80:20)
@@ -58,3 +58,6 @@
     - Lower(실패)
 
 <img src="README_Image\스크린샷_Lower(실패).png" width="700" height="370">
+
+    - ROI 추가
+<img src="README_Image\ROI1.png" width="700" height="370">
